@@ -1,0 +1,22 @@
+{
+	"name": "querbot",
+	"version": "1.0.0",
+	"description": "analyze follows and followers of covid denier influencers",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dstN/QuerBot.git"
+	},
+	"author": "dstN",
+	"bugs": {
+		"url": "https://github.com/dstN/QuerBot/issues"
+	},
+	"homepage": "https://github.com/dstN/QuerBot#readme",
+	"dependencies": {
+		"dotenv": "^16.0.0",
+		"twitter-api-v2": "^1.11.2"
+	}
+}
