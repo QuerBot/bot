@@ -1,5 +1,4 @@
 const client = require("./client");
-require("dotenv").config();
 
 async function tweet() {
 	await client.v2
