@@ -1,9 +1,8 @@
 const client = require("./client");
+require("dotenv").config();
 
-/* async function tweet() {
-	const appOnlyClient = await client.appLogin();
-
-	appOnlyClient.v1
+async function tweet() {
+	await client.v2
 		.tweet("This tweet was written by a bot")
 		.then((val) => {
 			console.log(val);
@@ -14,10 +13,4 @@ const client = require("./client");
 		});
 }
 
-tweet(); */
-
-async function testTweet() {
-	await client.v2.tweet("Hi, I am building a twitter bot!");
-}
-
-testTweet();
+tweet();
