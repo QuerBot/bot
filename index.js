@@ -1,15 +1,5 @@
+const { getUserID, getFollowings, getMentions } = require("./controller");
 const client = require("./client");
+require("dotenv").config();
 
-async function tweet() {
-	await client.v2
-		.tweet("This tweet was written by a bot")
-		.then((val) => {
-			console.log(val);
-			console.log("success");
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-}
-
-tweet();
+getMentions(process.env.BOT_ID);
