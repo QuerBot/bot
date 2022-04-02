@@ -1,3 +1,3 @@
 # QuerBot
 
-Analyzing Twitter Acocunts
+Analyzing Twitter Acocunts from specific bubbles
