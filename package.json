@@ -2,7 +2,7 @@
 	"name": "querbot",
 	"version": "1.0.0",
 	"description": "analyze follows and followers of covid denier influencers",
-	"main": "index.js",
+	"main": "src/index.js",
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
