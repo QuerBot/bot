@@ -1,7 +1,6 @@
-const { TwitterApi } = require("twitter-api-v2");
-require("dotenv").config();
+import { TwitterApi } from "twitter-api-v2";
 
-module.exports = new TwitterApi({
+export default new TwitterApi({
 	appKey: process.env.API_KEY,
 	appSecret: process.env.API_SECRET,
 	accessToken: process.env.ACCESS_TOKEN,

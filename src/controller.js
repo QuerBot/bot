@@ -1,5 +1,4 @@
-const client = require("./client");
-require("dotenv").config();
+import client from "./client.js";
 
 async function getUserID(userHandle) {
 	let user = await client.v2.userByUsername(userHandle);
@@ -29,4 +28,4 @@ async function getMentions(botID) {
 	}
 }
 
-module.exports = { getUserID, getFollowings, getMentions };
+export { getUserID, getFollowings, getMentions };

@@ -1,5 +1,5 @@
-const { getUserID, getFollowings, getMentions } = require("./controller");
-const client = require("./client");
-require("dotenv").config();
+import "reflect-metadata";
+import "dotenv/config";
+import { getMentions } from "./src/controller.js";
 
 getMentions(process.env.BOT_ID);
