@@ -21,7 +21,7 @@
 		"dotenv": "^16.0.0",
 		"mysql": "^2.18.1",
 		"reflect-metadata": "^0.1.13",
-		"twitter-api-v2": "^1.11.2",
+		"twitter-api-v2": "^1.11.3",
 		"typeorm": "^0.3.4"
 	}
 }
