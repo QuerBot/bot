@@ -7,7 +7,12 @@ async function getUserID(userHandle) {
 }
 
 async function getFollowings(userID) {
-	return await client.v2.following(userID);
+	const followings = await client.v2.following(userID, { asPaginator: true });
+	let followingList = [];
+	for await (const follows of followings) {
+		followingList.push(follows);
+	}
+	return followingList;
 }
 
 async function getMentions(botID) {
@@ -30,7 +35,19 @@ async function checkFollowers(userHandle, checkList) {
 	const userID = await getUserID(userHandle);
 	const followings = await getFollowings(userID);
 	const listArray = await makeList(checkList);
-	console.log(followings);
+	let positives = 0;
+	let length = followings.length;
+	for await (const follow of followings) {
+		let getHandle = follow.username;
+		getHandle = getHandle.toLowerCase();
+		if (listArray.includes(getHandle)) {
+			positives++;
+		}
+	}
+
+	let percentage = positives / (length / 100);
+
+	console.log(`${positives} von ${length} Accounts (${percentage}%) denen ${userHandle} folgt weisen Querdenkernähe auf oder sind Querdenker.`);
 }
 
 async function makeList(list) {
