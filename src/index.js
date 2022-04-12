@@ -1,10 +1,16 @@
 import "reflect-metadata";
 import "dotenv/config";
 import fs from "fs";
-import { getUserID, getFollowings, getMentions, makeList, checkFollowers } from "./controller.js";
+import { getMentions, checkFollowers } from "./controller.js";
+
+const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
 
 //getMentions(process.env.BOT_ID);
-let accounts = fs.readFileSync("./assets/accounts.txt", "utf-8");
 
-checkFollowers("exampleAccount", accounts);
+//console.log(data);
+
+checkFollowers("example", data);
+
+//console.log(data.filter((u) => u.userName === "alicologne").length);
+
 

@@ -1,13 +1,18 @@
+import fs from "fs";
 import client from "./client.js";
 
 async function getUserID(userHandle) {
 	let user = await client.v2.userByUsername(userHandle);
-	let id = user.data.id;
-	return id;
+	if (user.hasOwnProperty("data")) {
+		let id = user.data.id;
+		return id;
+	} else {
+		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
+	}
 }
 
 async function getFollowings(userID) {
-	const followings = await client.v2.following(userID, { asPaginator: true });
+	const followings = await client.v2.following(userID, { asPaginator: true, max_results: 1000 });
 	let followingList = [];
 	for await (const follows of followings) {
 		followingList.push(follows);
@@ -33,26 +38,64 @@ async function getMentions(botID) {
 
 async function checkFollowers(userHandle, checkList) {
 	const userID = await getUserID(userHandle);
-	const followings = await getFollowings(userID);
-	const listArray = await makeList(checkList);
+	const userFollowings = await getFollowings(userID);
 	let positives = 0;
-	let length = followings.length;
-	for await (const follow of followings) {
-		let getHandle = follow.username;
-		getHandle = getHandle.toLowerCase();
-		if (listArray.includes(getHandle)) {
+	let followingsLength = userFollowings.length;
+	let percentage = 0;
+	for await (const follow of userFollowings) {
+		let getFollow = follow.username;
+		getFollow = getFollow.toLowerCase();
+		let userDoesFollow = checkList.filter((userObj) => userObj.userName === getFollow).length;
+		if (userDoesFollow) {
 			positives++;
+			console.log(getFollow);
 		}
 	}
 
-	let percentage = positives / (length / 100);
+	percentage = positives / (followingsLength / 100);
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log(`Mindestens ${positives} von ${followingsLength} Accounts (${percentage}%) denen ${userHandle} folgt,`);
+	console.log("weisen Querdenkernähe auf oder sind Querdenker.");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
 
-	console.log(`${positives} von ${length} Accounts (${percentage}%) denen ${userHandle} folgt weisen Querdenkernähe auf oder sind Querdenker.`);
+	if (positives >= 50 || percentage >= 25) {
+		addToList(userHandle, userID, checkList);
+	} else {
+		console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
+	}
 }
 
-async function makeList(list) {
-	const listArr = list.split("\r\n");
-	return listArr;
+async function addToList(userHandle, userID, list) {
+	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle).length;
+	let checkUserID = list.filter((userObj) => userObj.userID === userID).length;
+
+	if (!checkUserHandle || !checkUserID) {
+		let userList = list;
+		let userObj = await makeUserObject(userHandle, userID);
+		userList.push(userObj);
+		let jsonContent = JSON.stringify(userList);
+		fs.writeFile("./assets/accounts.json", jsonContent, "utf-8", function (e) {
+			if (e) {
+				return console.log(e);
+			}
+			console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
+		});
+	} else {
+		console.log(`${userObj.userName} mit der ID ${userObj.userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
+	}
 }
 
-export { getUserID, getFollowings, getMentions, makeList, checkFollowers };
+async function makeUserObject(userName, userID) {
+	let userObject = {};
+	userObject.userID = parseInt(userID);
+	userObject.userName = userName;
+	return userObject;
+}
+
+export { getMentions, checkFollowers };
