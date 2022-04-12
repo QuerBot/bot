@@ -2,37 +2,43 @@ import fs from "fs";
 import client from "./client.js";
 
 async function getUserID(userHandle) {
-	let user = await client.v2.userByUsername(userHandle);
-	if (user.hasOwnProperty("data")) {
-		let id = user.data.id;
-		return id;
-	} else {
+	let user = await client.v2.userByUsername(userHandle).data;
+	if (!user) {
 		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
 	}
+
+	return user.id;
 }
 
 async function getFollowings(userID) {
-	const followings = await client.v2.following(userID, { asPaginator: true, max_results: 1000 });
+	const followings = await client.v2.following(userID, {
+		asPaginator: true, max_results: 1000
+	});
+
 	let followingList = [];
 	for await (const follows of followings) {
 		followingList.push(follows);
 	}
+
 	return followingList;
 }
 
 async function getMentions(botID) {
 	let timeline = await client.v2.userMentionTimeline(botID, {
 		max_results: 100,
-	});
-	let tweets = timeline.data.data;
+	}).data;
+
+	let tweets = timeline.data;
+
 	for (const tweet of tweets) {
 		let tweetText = tweet.text;
-		let tweetID = tweet.id;
-		if (tweetText.includes("check")) {
-			let userArr = tweetText.match(/@\w+/g).map((x) => x.substring(1));
-			let getUser = userArr.filter((user) => user !== process.env.BOT_HANDLE).toString();
-			getUserID(getUser);
+		if (!tweetText.includes("check")) {
+			continue;
 		}
+
+		let userArr = tweetText.match(/@\w+/g).map((x) => x.substring(1));
+		let getUser = userArr.filter((user) => user !== process.env.BOT_HANDLE).toString();
+		getUserID(getUser);
 	}
 }
 
@@ -42,14 +48,16 @@ async function checkFollowers(userHandle, checkList) {
 	let positives = 0;
 	let followingsLength = userFollowings.length;
 	let percentage = 0;
+
 	for await (const follow of userFollowings) {
-		let getFollow = follow.username;
-		getFollow = getFollow.toLowerCase();
+		let getFollow = follow.username.toLowerCase();
 		let userDoesFollow = checkList.filter((userObj) => userObj.userName === getFollow).length;
-		if (userDoesFollow) {
-			positives++;
-			console.log(getFollow);
+		if (!userDoesFollow) {
+			continue;
 		}
+
+		positives++;
+		console.log(getFollow);
 	}
 
 	percentage = positives / (followingsLength / 100);
@@ -64,62 +72,60 @@ async function checkFollowers(userHandle, checkList) {
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
 
+	let requiredPercentage = -1;
 	if (followingsLength <= 10) {
-		if (percentage >= 50) {
-			await addToList(userHandle, userID, checkList);
-		} else {
-			await threshholdNotReachedMsg(userHandle);
-		}
+		requiredPercentage = 50;
 	} else if (followingsLength <= 20) {
-		if (percentage >= 25) {
-			await addToList(userHandle, userID, checkList);
-		} else {
-			await threshholdNotReachedMsg(userHandle);
-		}
+		requiredPercentage = 25;
 	} else if (followingsLength <= 50) {
-		if (percentage >= 15) {
-			await addToList(userHandle, userID, checkList);
-		} else {
-			await threshholdNotReachedMsg(userHandle);
-		}
+		requiredPercentage = 15;
 	} else {
 		if (positives >= 15 || percentage >= 10) {
 			await addToList(userHandle, userID, checkList);
-		} else {
-			await threshholdNotReachedMsg(userHandle);
 		}
 	}
+
+	if (requiredPercentage == -1) return;
+	checkTreshhold(requiredPercentage, percentage, userHandle);
+}
+
+async function checkTreshhold(requiredPercentage, percentage, userHandle) {
+	if (percentage <= requiredPercentage) await threshholdNotReachedMsg(userHandle);
+
+	await addToList(userHandle);
 }
 
 async function threshholdNotReachedMsg(userHandle) {
-	return console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
+	console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
 }
 
 async function addToList(userHandle, userID, list) {
 	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle.toLowerCase()).length;
 	let checkUserID = list.filter((userObj) => userObj.userID === parseInt(userID)).length;
 
-	if (checkUserHandle === 0 || checkUserID === 0) {
-		let userList = list;
-		let userObj = await makeUserObject(userHandle, userID);
-		userList.push(userObj);
-		let jsonContent = JSON.stringify(userList);
-		fs.writeFile("./assets/accounts.json", jsonContent, "utf-8", function (e) {
-			if (e) {
-				return console.log(e);
-			}
-			return console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
-		});
-	} else {
-		return console.log(`${userHandle} mit der ID ${userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
+	if (checkUserHandle !== 0 || checkUserID !== 0) {
+		console.log(`${userHandle} mit der ID ${userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
+		return;
 	}
+
+	let userList = list;
+	let userObj = await makeUserObject(userHandle, userID);
+	userList.push(userObj);
+	let jsonContent = JSON.stringify(userList);
+	fs.writeFile("./assets/accounts.json", jsonContent, "utf-8", function (e) {
+		if (e) {
+			console.log(e);
+			return;
+		}
+		console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
+	});
 }
 
 async function makeUserObject(userName, userID) {
-	let userObject = {};
-	userObject.userID = parseInt(userID);
-	userObject.userName = userName.toLowerCase();
-	return userObject;
+	return {
+		userID: parseInt(userID),
+		userName: userName.toLowerCase()
+	};
 }
 
 export { getMentions, checkFollowers };
