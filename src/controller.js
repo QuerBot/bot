@@ -2,7 +2,7 @@ import fs from "fs";
 import client from "./client.js";
 
 async function getUserID(userHandle) {
-	let user = await client.v2.userByUsername(userHandle).data;
+	let user = (await client.v2.userByUsername(userHandle)).data;
 	if (!user) {
 		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
 	}
@@ -24,9 +24,11 @@ async function getFollowings(userID) {
 }
 
 async function getMentions(botID) {
-	let timeline = await client.v2.userMentionTimeline(botID, {
-		max_results: 100,
-	}).data;
+	let timeline = (
+		await client.v2.userMentionTimeline(botID, {
+			max_results: 100,
+		})
+	).data;
 
 	let tweets = timeline.data;
 
