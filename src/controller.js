@@ -1,4 +1,5 @@
 import fs from "fs";
+import { UsingJoinColumnOnlyOnOneSideAllowedError } from "typeorm";
 import client from "./client.js";
 
 async function getUserID(userHandle) {
@@ -64,18 +65,42 @@ async function checkFollowers(userHandle, checkList) {
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
 	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
 
-	if (positives >= 50 || percentage >= 25) {
-		addToList(userHandle, userID, checkList);
+	if (followingsLength <= 10) {
+		if (percentage >= 50) {
+			await addToList(userHandle, userID, checkList);
+		} else {
+			await threshholdNotReachedMsg(userHandle);
+		}
+	} else if (followingsLength <= 20) {
+		if (percentage >= 25) {
+			await addToList(userHandle, userID, checkList);
+		} else {
+			await threshholdNotReachedMsg(userHandle);
+		}
+	} else if (followingsLength <= 50) {
+		if (percentage >= 15) {
+			await addToList(userHandle, userID, checkList);
+		} else {
+			await threshholdNotReachedMsg(userHandle);
+		}
 	} else {
-		console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
+		if (positives >= 15 || percentage >= 10) {
+			await addToList(userHandle, userID, checkList);
+		} else {
+			await threshholdNotReachedMsg(userHandle);
+		}
 	}
 }
 
-async function addToList(userHandle, userID, list) {
-	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle).length;
-	let checkUserID = list.filter((userObj) => userObj.userID === userID).length;
+async function threshholdNotReachedMsg(userHandle) {
+	return console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
+}
 
-	if (!checkUserHandle || !checkUserID) {
+async function addToList(userHandle, userID, list) {
+	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle.toLowerCase()).length;
+	let checkUserID = list.filter((userObj) => userObj.userID === parseInt(userID)).length;
+
+	if (checkUserHandle === 0 || checkUserID === 0) {
 		let userList = list;
 		let userObj = await makeUserObject(userHandle, userID);
 		userList.push(userObj);
@@ -84,17 +109,17 @@ async function addToList(userHandle, userID, list) {
 			if (e) {
 				return console.log(e);
 			}
-			console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
+			return console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
 		});
 	} else {
-		console.log(`${userObj.userName} mit der ID ${userObj.userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
+		return console.log(`${userHandle} mit der ID ${userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
 	}
 }
 
 async function makeUserObject(userName, userID) {
 	let userObject = {};
 	userObject.userID = parseInt(userID);
-	userObject.userName = userName;
+	userObject.userName = userName.toLowerCase();
 	return userObject;
 }
 
