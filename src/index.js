@@ -7,6 +7,6 @@ const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
 
 //getMentions(process.env.BOT_ID);
 
-checkFollowers("brinilo2", data);
+checkFollowers("BurgerinCitizen", data);
 
 

@@ -1,5 +1,4 @@
 import fs from "fs";
-import { UsingJoinColumnOnlyOnOneSideAllowedError } from "typeorm";
 import client from "./client.js";
 
 async function getUserID(userHandle) {
