@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import "dotenv/config";
 import fs from "fs";
-import { getMentions, checkFollowers } from "./controller.js";
+import { getMentions, checkFollowers, getUserID, addToList } from "./controller.js";
 
 const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
 
@@ -9,4 +9,4 @@ const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
 
 checkFollowers("example", data);
 
-
+//addToList("example", await getUserID("example"), data); //manual add to list

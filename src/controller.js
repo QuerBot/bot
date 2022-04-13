@@ -84,17 +84,21 @@ async function checkFollowers(userHandle, checkList) {
 	} else {
 		if (positives >= 15 || percentage >= 10) {
 			await addToList(userHandle, userID, checkList);
+		} else {
+			requiredPercentage = 10;
 		}
 	}
 
 	if (requiredPercentage == -1) return;
-	checkTreshhold(requiredPercentage, percentage, userHandle);
+	await checkTreshhold(requiredPercentage, percentage, userHandle, userID, checkList);
 }
 
-async function checkTreshhold(requiredPercentage, percentage, userHandle) {
-	if (percentage <= requiredPercentage) await threshholdNotReachedMsg(userHandle);
+async function checkTreshhold(requiredPercentage, percentage, userHandle, userID, checkList) {
+	if (percentage >= requiredPercentage) {
+		return await addToList(userHandle, userID, checkList);
+	}
 
-	await addToList(userHandle);
+	await threshholdNotReachedMsg(userHandle);
 }
 
 async function threshholdNotReachedMsg(userHandle) {
@@ -126,8 +130,8 @@ async function addToList(userHandle, userID, list) {
 async function makeUserObject(userName, userID) {
 	return {
 		userID: parseInt(userID),
-		userName: userName.toLowerCase()
+		userName: userName.toLowerCase(),
 	};
 }
 
-export { getMentions, checkFollowers };
+export { getMentions, checkFollowers, getUserID, addToList };
