@@ -8,13 +8,13 @@ export default new EntitySchema({
 		id: {
 			primary: true,
 			type: "int",
-			generated: true,
 		},
 		handle: {
 			type: "varchar",
 		},
 		lastCheck: {
 			type: "datetime",
+			generated: true,
 		},
 		rating: {
 			type: "int",
