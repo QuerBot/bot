@@ -17,7 +17,6 @@
 	},
 	"homepage": "https://github.com/dstN/QuerBot#readme",
 	"dependencies": {
-		"@types/node": "^17.0.23",
 		"cron": "^1.8.2",
 		"dotenv": "^16.0.0",
 		"mysql": "^2.18.1",
