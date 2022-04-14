@@ -17,12 +17,8 @@
 	},
 	"homepage": "https://github.com/dstN/QuerBot#readme",
 	"dependencies": {
-		"@types/node": "^17.0.23",
 		"cron": "^1.8.2",
 		"dotenv": "^16.0.0",
-		"mysql": "^2.18.1",
-		"reflect-metadata": "^0.1.13",
-		"twitter-api-v2": "^1.11.3",
-		"typeorm": "^0.3.4"
+		"twitter-api-v2": "^1.11.3"
 	}
 }
