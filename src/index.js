@@ -1,7 +1,6 @@
 import "dotenv/config";
 import fs from "fs";
 import { getMentions, checkFollowers, getUserID, addToList } from "./controller.js";
-import { json } from "stream/consumers";
 
 const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
 
