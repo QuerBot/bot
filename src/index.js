@@ -10,8 +10,7 @@ async function main() {
 
 	/* Manual Add to List 
 	let userToAdd = 'example';
-	let manualUser = await getUserID(userToAdd);
-	addToList(userToAdd, manualUser, data);
+	addToList(userToAdd, await getUserID(userToAdd), data);
 	*/
 
 	await checkFollowers('example', data);
