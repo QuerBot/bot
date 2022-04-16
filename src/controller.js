@@ -1,5 +1,5 @@
 import fs from "fs";
-import client from "./client.js";
+import client from './client';
 
 async function getUserID(userHandle) {
 	let user = (await client.v2.userByUsername(userHandle)).data;
@@ -118,7 +118,7 @@ async function addToList(userHandle, userID, list) {
 	let userObj = await makeUserObject(userHandle, userID);
 	userList.push(userObj);
 	let jsonContent = JSON.stringify(userList);
-	fs.writeFile("./assets/accounts.json", jsonContent, "utf-8", function (e) {
+	fs.writeFile('src/assets/accounts.json', jsonContent, 'utf-8', function (e) {
 		if (e) {
 			console.log(e);
 			return;

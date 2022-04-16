@@ -1,11 +1,11 @@
 import "dotenv/config";
 import fs from "fs";
-import { getMentions, checkFollowers, getUserID, addToList } from "./controller.js";
+import { getMentions, checkFollowers, getUserID, addToList } from './controller';
 
-const data = JSON.parse(fs.readFileSync("./assets/accounts.json"));
+const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
 
 //getMentions(process.env.BOT_ID);
 
-checkFollowers("example", data);
+checkFollowers('example', data);
 
 //addToList("example", await getUserID("example"), data); //manual add to list
