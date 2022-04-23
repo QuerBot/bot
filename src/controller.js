@@ -1,4 +1,5 @@
 import fs from "fs";
+const axios = require('axios').default;
 import client from './client';
 
 async function getUserID(userHandle) {
@@ -10,9 +11,50 @@ async function getUserID(userHandle) {
 	return user.id;
 }
 
+async function postUser(user) {
+	await axios
+		.post(`${process.env.BASE_URL}/user`, user)
+		.then(function (res) {
+			console.log(res);
+		})
+		.catch(function (e) {
+			console.log(e);
+		});
+}
+
+async function sendFollowingsToDB(handle) {
+	const userid = await getUserID(handle);
+	const followings = await getFollowings(userid);
+	let parentArr = [];
+	let user = {};
+	user.id = userid;
+	user.handle = handle;
+	user.follows = [];
+	user.bubble = [
+		{
+			id: '2e5a73e0944ce9d8d783b49ca08ad8fa',
+		},
+	];
+	for (const following of followings) {
+		let followingArr = [];
+		let followingObj = {};
+		followingObj.id = parseInt(following.id);
+		followingObj.handle = following.username;
+		followingArr.push(followingObj);
+		await postUser(followingArr);
+
+		let userObj = {};
+		userObj.id = parseInt(following.id);
+		user.follows.push(userObj);
+	}
+	parentArr.push(user);
+	await postUser(parentArr);
+}
+
 async function getFollowings(userID) {
 	const followings = await client.v2.following(userID, {
-		asPaginator: true, max_results: 1000
+		asPaginator: true,
+		max_results: 1000,
 	});
 
 	let followingList = [];
@@ -21,6 +63,20 @@ async function getFollowings(userID) {
 	}
 
 	return followingList;
+}
+
+async function getFollowers(userID) {
+	const followers = await client.v2.followers(userID, {
+		asPaginator: true,
+		max_results: 1000,
+	});
+
+	let followerList = [];
+	for await (const follower of followers) {
+		followerList.push(follower);
+	}
+
+	return followerList;
 }
 
 async function getMentions(botID) {
@@ -34,7 +90,7 @@ async function getMentions(botID) {
 
 	for (const tweet of tweets) {
 		let tweetText = tweet.text;
-		if (!tweetText.includes("check")) {
+		if (!tweetText.includes('check')) {
 			continue;
 		}
 
@@ -63,16 +119,16 @@ async function checkFollowers(userHandle, checkList) {
 	}
 
 	percentage = positives / (followingsLength / 100);
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
 	console.log(`Mindestens ${positives} von ${followingsLength} Accounts (${percentage}%) denen ${userHandle} folgt,`);
-	console.log("weisen Querdenkernähe auf oder sind Querdenker.");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
-	console.log("- - - - - - - - - - - - - - - - - - - - - - - -");
+	console.log('weisen Querdenkernähe auf oder sind Querdenker.');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
+	console.log('- - - - - - - - - - - - - - - - - - - - - - - -');
 
 	let requiredPercentage = -1;
 	if (followingsLength <= 10) {
@@ -134,4 +190,4 @@ async function makeUserObject(userName, userID) {
 	};
 }
 
-export { getMentions, checkFollowers, getUserID, addToList };
+export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB };

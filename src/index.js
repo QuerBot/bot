@@ -1,9 +1,8 @@
 import "dotenv/config";
 import fs from "fs";
-import { getMentions, checkFollowers, getUserID, addToList } from './controller';
+import { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
-
 
 async function main() {
 	//getMentions(process.env.BOT_ID);
@@ -16,4 +15,10 @@ async function main() {
 	await checkFollowers('example', data);
 }
 
-main();
+//main();
+
+async function importer() {
+	await sendFollowingsToDB('example');
+}
+
+importer();

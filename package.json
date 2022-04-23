@@ -18,6 +18,7 @@
 	},
 	"homepage": "https://github.com/dstN/QuerBot#readme",
 	"dependencies": {
+		"axios": "^0.26.1",
 		"cron": "^1.8.2",
 		"dotenv": "^16.0.0",
 		"twitter-api-v2": "^1.11.3"
