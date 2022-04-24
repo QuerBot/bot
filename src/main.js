@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import fs from 'fs';
-import { removeUserFromBubble } from './user/user.service';
+import { updateFollowers } from './user/user.service';
 import { sendFollowingsToDB } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
@@ -19,7 +19,11 @@ async function main() {
 //main();
 
 async function importer() {
-	await removeUserFromBubble(process.env.EXAMPLE_ID, process.env.EXAMPLE_BUBBLE);
+	const userObj = {
+		rating: Math.floor(Math.random() * (20 - 0 + 1)) + 0,
+		handle: process.env.EXAMPLE_USER,
+	};
+	await updateFollowers(process.env.EXAMPLE_ID, userObj);
 }
 
 importer();

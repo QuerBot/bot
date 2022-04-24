@@ -57,6 +57,43 @@ async function addUserToBubble(userid, bubbleid) {
 
 export { addUserToBubble };
 
+async function updateUser(userid, user) {
+	let userExist = await getUserById(userid);
+	let currentDate = new Date().toISOString();
+	user.lastCheck = currentDate;
+	if (userExist.length) {
+		try {
+			await axios.patch(`${process.env.BASE_URL}/user/${userid}`, user);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+}
+
+export { updateUser };
+
+async function updateFollowers(userid, followerList) {
+	let userExist = await getUserById(userid);
+	try {
+		await axios({
+			method: 'patch',
+			url: `${process.env.BASE_URL}/user/${userid}/followers`,
+			data: [
+				{
+					id: '56022727',
+				},
+				{
+					id: '55654644545854',
+				},
+			],
+		});
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+export { updateFollowers };
+
 async function removeUserFromBubble(userid, bubbleid) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
