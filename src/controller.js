@@ -11,7 +11,23 @@ async function getUserID(userHandle) {
 	return user.id;
 }
 
+async function userExists(userid) {
+	console.log(userid);
+	await axios
+		.get(`${process.env.BASE_URL}/user/${userid}`)
+		.then(function (res) {
+			console.log(res.data.length);
+		})
+		.catch(function (e) {
+			console.log(e);
+		});
+}
+
 async function postUser(user) {
+	let currentUserId = user[0].id;
+	//console.log(currentUserId);
+	let userExist = await userExists(currentUserId);
+	//console.log(userExist);
 	await axios
 		.post(`${process.env.BASE_URL}/user`, user)
 		.then(function (res) {
@@ -24,7 +40,7 @@ async function postUser(user) {
 
 async function sendFollowingsToDB(handle) {
 	const userid = await getUserID(handle);
-	const followings = await getFollowings(userid);
+	const followings = await getFollowers(userid);
 	let parentArr = [];
 	let user = {};
 	user.id = userid;
@@ -40,6 +56,11 @@ async function sendFollowingsToDB(handle) {
 		let followingObj = {};
 		followingObj.id = parseInt(following.id);
 		followingObj.handle = following.username;
+		followingObj.follows = [
+			{
+				id: userid,
+			},
+		];
 		followingArr.push(followingObj);
 		await postUser(followingArr);
 
@@ -48,7 +69,7 @@ async function sendFollowingsToDB(handle) {
 		user.follows.push(userObj);
 	}
 	parentArr.push(user);
-	await postUser(parentArr);
+	//await postUser(parentArr);
 }
 
 async function getFollowings(userID) {
@@ -190,4 +211,4 @@ async function makeUserObject(userName, userID) {
 	};
 }
 
-export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB };
+export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB, userExists };

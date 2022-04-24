@@ -1,6 +1,7 @@
-import "dotenv/config";
-import fs from "fs";
-import { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB } from './controller';
+import 'dotenv/config';
+import fs from 'fs';
+import { removeUserFromBubble } from './user/user.service';
+import { sendFollowingsToDB } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
 
@@ -18,7 +19,7 @@ async function main() {
 //main();
 
 async function importer() {
-	await sendFollowingsToDB('example');
+	await removeUserFromBubble(process.env.EXAMPLE_ID, process.env.EXAMPLE_BUBBLE);
 }
 
 importer();
