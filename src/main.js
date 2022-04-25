@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import { updateFollowers } from './user/user.service';
-import { sendFollowingsToDB } from './controller';
+import { checkFollowers } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
 
@@ -26,4 +26,4 @@ async function importer() {
 	await updateFollowers(process.env.EXAMPLE_ID, userObj);
 }
 
-importer();
+//importer();
