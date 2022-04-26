@@ -72,27 +72,52 @@ async function updateUser(userid, user) {
 
 export { updateUser };
 
+async function updateFollowings(userid, followerList) {
+	let userExist = await getUserById(userid);
+	if (userExist.length) {
+		try {
+			await axios({
+				method: 'patch',
+				url: `${process.env.BASE_URL}/user/${userid}/followings`,
+				data: followerList,
+			});
+		} catch (e) {
+			console.log(e);
+		}
+	}
+}
+
+export { updateFollowings };
+
 async function updateFollowers(userid, followerList) {
 	let userExist = await getUserById(userid);
-	try {
-		await axios({
-			method: 'patch',
-			url: `${process.env.BASE_URL}/user/${userid}/followers`,
-			data: [
-				{
-					id: '56022727',
-				},
-				{
-					id: '55654644545854',
-				},
-			],
-		});
-	} catch (e) {
-		console.log(e);
+	if (userExist.length) {
+		try {
+			await axios({
+				method: 'patch',
+				url: `${process.env.BASE_URL}/user/${userid}/followers`,
+				data: followerList,
+			});
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }
 
 export { updateFollowers };
+
+async function removeUser(userid) {
+	let userExist = await getUserById(userid);
+	if (userExist.length) {
+		try {
+			await axios.delete(`${process.env.BASE_URL}/user/${userid}`);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+}
+
+export { removeUser };
 
 async function removeUserFromBubble(userid, bubbleid) {
 	let userExist = await getUserById(userid);

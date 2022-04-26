@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import fs from 'fs';
-import { updateFollowers } from './user/user.service';
+import { removeUser } from './user/user.service';
 import { checkFollowers } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
@@ -23,7 +23,15 @@ async function importer() {
 		rating: Math.floor(Math.random() * (20 - 0 + 1)) + 0,
 		handle: process.env.EXAMPLE_USER,
 	};
-	await updateFollowers(process.env.EXAMPLE_ID, userObj);
+	const followerObj = [
+		{
+			id: '56022727',
+		},
+		{
+			id: '55654644545854',
+		},
+	];
+	await removeUser('55654644545854');
 }
 
-//importer();
+importer();
