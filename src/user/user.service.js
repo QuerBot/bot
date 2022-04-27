@@ -1,9 +1,13 @@
+// User Service for NestJS Api - All Routes
 const axios = require('axios').default;
+
+// #region - Get-Routes
 
 async function getUser() {
 	const response = await axios.get(`${process.env.BASE_URL}/user`);
 	return response.data;
 }
+
 export { getUser };
 
 async function getUserById(userid) {
@@ -34,6 +38,10 @@ async function getUserHandle(userid) {
 
 export { getUserHandle };
 
+// #endregion
+
+// #region - Post-Routes
+
 async function postUser(user) {
 	let userExist = await getUserById(user[0].id);
 	if (userExist.length) {
@@ -56,6 +64,10 @@ async function addUserToBubble(userid, bubbleid) {
 }
 
 export { addUserToBubble };
+
+// #endregion
+
+// #region - Patch-Routes
 
 async function updateUser(userid, user) {
 	let userExist = await getUserById(userid);
@@ -106,6 +118,10 @@ async function updateFollowers(userid, followerList) {
 
 export { updateFollowers };
 
+// #endregion
+
+// #region - Delete-Routes
+
 async function removeUser(userid) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
@@ -135,3 +151,5 @@ async function removeUserFromBubble(userid, bubbleid) {
 }
 
 export { removeUserFromBubble };
+
+// #endregion
