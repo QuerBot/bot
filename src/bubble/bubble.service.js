@@ -9,15 +9,18 @@ export async function getBubble() {
 }
 
 export async function getBubbleById(id) {
-	// TO DO
+	const response = await axios.get(`${process.env.BASE_URL}/bubble/${id}`);
+	return response.data;
 }
 
 export async function getBubbleMembers(id) {
-	// TO DO
+	const response = await axios.get(`${process.env.BASE_URL}/bubble/${id}/members`);
+	return response.data;
 }
 
 export async function getBubbleMostFollowedUsers(id) {
-	// TO DO
+	const response = await axios.get(`${process.env.BASE_URL}/bubble/${id}/mostFollowed`);
+	return response.data;
 }
 
 // #endregion
