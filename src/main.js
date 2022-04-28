@@ -16,7 +16,7 @@ async function main() {
 	await checkFollowers('example', data);
 }
 
-//main();
+main();
 
 async function importer() {
 	const userObj = {
@@ -34,4 +34,4 @@ async function importer() {
 	await removeUser('55654644545854');
 }
 
-importer();
+//importer();

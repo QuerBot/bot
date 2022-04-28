@@ -3,46 +3,36 @@ const axios = require('axios').default;
 
 // #region - Get-Routes
 
-async function getUser() {
+export async function getUser() {
 	const response = await axios.get(`${process.env.BASE_URL}/user`);
 	return response.data;
 }
 
-export { getUser };
-
-async function getUserById(userid) {
+export async function getUserById(userid) {
 	const response = await axios.get(`${process.env.BASE_URL}/user/${userid}`);
 	return response.data;
 }
 
-export { getUserById };
-
-async function getUserFollowings(userid) {
+export async function getUserFollowings(userid) {
 	const response = await axios.get(`${process.env.BASE_URL}/user/${userid}/followings`);
 	return response.data;
 }
 
-export { getUserFollowings };
-
-async function getUserFollowers(userid) {
+export async function getUserFollowers(userid) {
 	const response = await axios.get(`${process.env.BASE_URL}/user/${userid}/followers`);
 	return response.data;
 }
 
-export { getUserFollowers };
-
-async function getUserHandle(userid) {
+export async function getUserHandle(userid) {
 	const response = await axios.get(`${process.env.BASE_URL}/user/${userid}/handle`);
 	return response.data;
 }
-
-export { getUserHandle };
 
 // #endregion
 
 // #region - Post-Routes
 
-async function postUser(user) {
+export async function postUser(user) {
 	let userExist = await getUserById(user[0].id);
 	if (userExist.length) {
 		await axios.post(`${process.env.BASE_URL}/user`, user);
@@ -50,9 +40,7 @@ async function postUser(user) {
 	console.log('User already exists in database send to updateFollowings/updateFollowers/updateBubble instead');
 }
 
-export { postUser };
-
-async function addUserToBubble(userid, bubbleid) {
+export async function addUserToBubble(userid, bubbleid) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
 		userExist = userExist[0];
@@ -63,13 +51,11 @@ async function addUserToBubble(userid, bubbleid) {
 	}
 }
 
-export { addUserToBubble };
-
 // #endregion
 
 // #region - Patch-Routes
 
-async function updateUser(userid, user) {
+export async function updateUser(userid, user) {
 	let userExist = await getUserById(userid);
 	let currentDate = new Date().toISOString();
 	user.lastCheck = currentDate;
@@ -82,9 +68,7 @@ async function updateUser(userid, user) {
 	}
 }
 
-export { updateUser };
-
-async function updateFollowings(userid, followerList) {
+export async function updateFollowings(userid, followerList) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
 		try {
@@ -99,9 +83,7 @@ async function updateFollowings(userid, followerList) {
 	}
 }
 
-export { updateFollowings };
-
-async function updateFollowers(userid, followerList) {
+export async function updateFollowers(userid, followerList) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
 		try {
@@ -116,13 +98,11 @@ async function updateFollowers(userid, followerList) {
 	}
 }
 
-export { updateFollowers };
-
 // #endregion
 
 // #region - Delete-Routes
 
-async function removeUser(userid) {
+export async function removeUser(userid) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
 		try {
@@ -133,9 +113,7 @@ async function removeUser(userid) {
 	}
 }
 
-export { removeUser };
-
-async function removeUserFromBubble(userid, bubbleid) {
+export async function removeUserFromBubble(userid, bubbleid) {
 	let userExist = await getUserById(userid);
 	if (userExist.length) {
 		userExist = userExist[0];
@@ -149,7 +127,5 @@ async function removeUserFromBubble(userid, bubbleid) {
 		}
 	}
 }
-
-export { removeUserFromBubble };
 
 // #endregion
