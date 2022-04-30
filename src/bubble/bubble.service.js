@@ -44,7 +44,8 @@ export async function updateBubble(bubble) {
 // #region - Delete-Routes
 
 export async function deleteBubble(id) {
-	// TO DO
+	const response = await axios.delete(`${process.env.BASE_URL}/bubble/${id}`);
+	return response.data;
 }
 
 // #endregion
