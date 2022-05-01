@@ -28,15 +28,31 @@ export async function getBubbleMostFollowedUsers(id) {
 // #region - Post-Routes
 
 export async function postBubble(bubble) {
-	// TO DO
+	let bubbleExist = true; // Check for bubblename if getBubbleByName exists
+	if (bubbleExist) {
+		await axios.post(`${process.env.BASE_URL}/bubble`, bubble);
+		return 'Bubble was successfully added';
+	}
+	console.log('Bubble already exists');
 }
 
 // #endregion
 
 // #region - Patch-Routes
 
-export async function updateBubble(bubble) {
-	// TO DO
+export async function updateBubble(bubbleid, bubble) {
+	let bubbleExist = await getBubbleById(bubbleid);
+	if (bubbleExist.length) {
+		try {
+			await axios({
+				method: 'patch',
+				url: `${process.env.BASE_URL}/bubble/${bubbleid}`,
+				data: bubble,
+			});
+		} catch (e) {
+			console.log(e);
+		}
+	}
 }
 
 // #endregion

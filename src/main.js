@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import fs from 'fs';
-import { removeUser } from './user/user.service';
+import { postBubble, updateBubble, deleteBubble } from './bubble/bubble.service';
 import { checkFollowers } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
@@ -16,22 +16,14 @@ async function main() {
 	await checkFollowers('example', data);
 }
 
-main();
+//main();
 
 async function importer() {
-	const userObj = {
-		rating: Math.floor(Math.random() * (20 - 0 + 1)) + 0,
-		handle: process.env.EXAMPLE_USER,
+	let bubble = {
+		name: 'QuerBot-Test',
+		description: 'Querbot Not Testing anymore Bubble',
 	};
-	const followerObj = [
-		{
-			id: '56022727',
-		},
-		{
-			id: '55654644545854',
-		},
-	];
-	await removeUser('55654644545854');
+	await updateBubble('97088b0403c4858fb71d7a7130550608', bubble);
 }
 
-//importer();
+importer();
