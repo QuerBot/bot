@@ -26,12 +26,12 @@ export async function getBubbleMembers(id) {
 export async function getBubbleMostFollowedUsers(id, count) {
 	let bubbleExist = await getBubbleById(id);
 	if (bubbleExist.length) {
-		let countObj = {};
-		countObj.count = count;
 		const response = await axios({
 			method: 'get',
 			url: `${process.env.BASE_URL}/bubble/${id}/mostFollowed`,
-			data: countObj,
+			data: {
+				count: count,
+			},
 		});
 		return response.data;
 	}
