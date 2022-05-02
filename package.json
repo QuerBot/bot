@@ -19,8 +19,9 @@
 	"homepage": "https://github.com/dstN/QuerBot#readme",
 	"dependencies": {
 		"axios": "^0.26.1",
-		"cron": "^1.8.2",
+		"cron": "^1.8.3",
 		"dotenv": "^16.0.0",
+		"node-cache": "^5.1.2",
 		"twitter-api-v2": "^1.11.3"
 	},
 	"devDependencies": {

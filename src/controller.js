@@ -3,6 +3,8 @@ const axios = require('axios').default;
 import client from './client';
 import * as bubbleService from './bubble/bubble.service';
 import * as userService from './user/user.service';
+const NodeCache = require('node-cache');
+export const botCache = new NodeCache({ checkperiod: 900 });
 
 async function getUserID(userHandle) {
 	let user = (await client.v2.userByUsername(userHandle)).data;
@@ -25,16 +27,18 @@ async function sendFollowingsToDB(handle) {
 	];
 	await userService.postUser([userObj]);
 	userObj.follows = [];
+	let followingArray = [];
 	for (const following of followings) {
 		let followingObj = {};
 		followingObj.id = following.id;
 		followingObj.handle = following.username;
-		await userService.postUser([followingObj]);
+		followingArray.push(followingObj);
 
 		let followObj = {};
 		followObj.id = following.id;
 		userObj.follows.push(followObj);
 	}
+	await userService.postUser(followingArray);
 	await userService.updateFollowings(id, userObj.follows);
 }
 
@@ -44,8 +48,11 @@ async function getFollowings(userID) {
 		max_results: 1000,
 	});
 
+	let rateLimit = followings._rateLimit;
+	botCache.set('rate', rateLimit);
+
 	let followingList = [];
-	for await (const follows of followings) {
+	for await (const follows of followings._realData.data) {
 		followingList.push(follows);
 	}
 

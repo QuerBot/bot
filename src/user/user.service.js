@@ -33,12 +33,7 @@ export async function getUserHandle(userid) {
 // #region - Post-Routes
 
 export async function postUser(user) {
-	let userExist = await getUserById(user[0].id);
-	if (!userExist.length) {
-		await axios.post(`${process.env.BASE_URL}/user`, user);
-		return;
-	}
-	console.log('User already exists in database send to updateFollowings/updateFollowers/updateBubble instead');
+	await axios.post(`${process.env.BASE_URL}/user`, user);
 }
 
 export async function addUserToBubble(userid, bubbleid) {
