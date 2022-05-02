@@ -1,75 +1,41 @@
 import fs from "fs";
 const axios = require('axios').default;
 import client from './client';
+import * as bubbleService from './bubble/bubble.service';
+import * as userService from './user/user.service';
 
 async function getUserID(userHandle) {
 	let user = (await client.v2.userByUsername(userHandle)).data;
 	if (!user) {
 		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
 	}
-
 	return user.id;
 }
 
-async function userExists(userid) {
-	console.log(userid);
-	await axios
-		.get(`${process.env.BASE_URL}/user/${userid}`)
-		.then(function (res) {
-			console.log(res.data.length);
-		})
-		.catch(function (e) {
-			console.log(e);
-		});
-}
-
-async function postUser(user) {
-	let currentUserId = user[0].id;
-	//console.log(currentUserId);
-	let userExist = await userExists(currentUserId);
-	//console.log(userExist);
-	await axios
-		.post(`${process.env.BASE_URL}/user`, user)
-		.then(function (res) {
-			console.log(res);
-		})
-		.catch(function (e) {
-			console.log(e);
-		});
-}
-
 async function sendFollowingsToDB(handle) {
-	const userid = await getUserID(handle);
-	const followings = await getFollowers(userid);
-	let parentArr = [];
-	let user = {};
-	user.id = userid;
-	user.handle = handle;
-	user.follows = [];
-	user.bubble = [
+	const id = await getUserID(handle);
+	const followings = await getFollowings(id);
+	let userObj = {};
+	userObj.id = `${id}`;
+	userObj.handle = handle;
+	userObj.bubble = [
 		{
-			id: '2e5a73e0944ce9d8d783b49ca08ad8fa',
+			id: '58e9469ba2b81e7b0837199955bf9df4',
 		},
 	];
+	await userService.postUser([userObj]);
+	userObj.follows = [];
 	for (const following of followings) {
-		let followingArr = [];
 		let followingObj = {};
-		followingObj.id = parseInt(following.id);
+		followingObj.id = following.id;
 		followingObj.handle = following.username;
-		followingObj.follows = [
-			{
-				id: userid,
-			},
-		];
-		followingArr.push(followingObj);
-		await postUser(followingArr);
+		await userService.postUser([followingObj]);
 
-		let userObj = {};
-		userObj.id = parseInt(following.id);
-		user.follows.push(userObj);
+		let followObj = {};
+		followObj.id = following.id;
+		userObj.follows.push(followObj);
 	}
-	parentArr.push(user);
-	//await postUser(parentArr);
+	await userService.updateFollowings(id, userObj.follows);
 }
 
 async function getFollowings(userID) {
@@ -211,4 +177,4 @@ async function makeUserObject(userName, userID) {
 	};
 }
 
-export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB, userExists };
+export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB };

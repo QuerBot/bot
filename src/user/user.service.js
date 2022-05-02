@@ -34,8 +34,9 @@ export async function getUserHandle(userid) {
 
 export async function postUser(user) {
 	let userExist = await getUserById(user[0].id);
-	if (userExist.length) {
+	if (!userExist.length) {
 		await axios.post(`${process.env.BASE_URL}/user`, user);
+		return;
 	}
 	console.log('User already exists in database send to updateFollowings/updateFollowers/updateBubble instead');
 }
