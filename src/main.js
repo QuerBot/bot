@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import fs from 'fs';
-import { postBubble, updateBubble, deleteBubble } from './bubble/bubble.service';
 import { checkFollowers } from './controller';
 
 const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
@@ -18,12 +17,3 @@ async function main() {
 
 //main();
 
-async function importer() {
-	let bubble = {
-		name: 'QuerBot-Test',
-		description: 'Querbot Not Testing anymore Bubble',
-	};
-	await updateBubble('97088b0403c4858fb71d7a7130550608', bubble);
-}
-
-importer();

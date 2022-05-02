@@ -13,14 +13,28 @@ export async function getBubbleById(id) {
 	return response.data;
 }
 
+export async function getBubbleByName(name) {
+	const response = await axios.get(`${process.env.BASE_URL}/bubble/${name}/byName`);
+	return response.data;
+}
+
 export async function getBubbleMembers(id) {
 	const response = await axios.get(`${process.env.BASE_URL}/bubble/${id}/members`);
 	return response.data;
 }
 
-export async function getBubbleMostFollowedUsers(id) {
-	const response = await axios.get(`${process.env.BASE_URL}/bubble/${id}/mostFollowed`);
-	return response.data;
+export async function getBubbleMostFollowedUsers(id, count) {
+	let bubbleExist = await getBubbleById(id);
+	if (bubbleExist.length) {
+		let countObj = {};
+		countObj.count = count;
+		const response = await axios({
+			method: 'get',
+			url: `${process.env.BASE_URL}/bubble/${id}/mostFollowed`,
+			data: countObj,
+		});
+		return response.data;
+	}
 }
 
 // #endregion
@@ -28,8 +42,8 @@ export async function getBubbleMostFollowedUsers(id) {
 // #region - Post-Routes
 
 export async function postBubble(bubble) {
-	let bubbleExist = true; // Check for bubblename if getBubbleByName exists
-	if (bubbleExist) {
+	let bubbleExist = await getBubbleByName(bubble.name);
+	if (bubbleExist.length) {
 		await axios.post(`${process.env.BASE_URL}/bubble`, bubble);
 		return 'Bubble was successfully added';
 	}
