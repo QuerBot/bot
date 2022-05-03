@@ -6,15 +6,28 @@ import * as userService from './user/user.service';
 const NodeCache = require('node-cache');
 export const botCache = new NodeCache({ checkperiod: 900 });
 
-async function getUserID(userHandle) {
-	let user = (await client.v2.userByUsername(userHandle)).data;
+export async function getUserID(userHandle) {
+	let user = await client.v2.userByUsername(userHandle);
+	user = user.data;
 	if (!user) {
 		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
 	}
 	return user.id;
 }
 
-async function sendFollowingsToDB(handle) {
+export async function getUser(userHandle) {
+	let user = await client.v2.userByUsername(userHandle);
+	user = user.data;
+	if (!user) {
+		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
+	}
+	let userObj = {};
+	userObj.id = user.id;
+	userObj.handle = user.username;
+	return userObj;
+}
+
+export async function sendFollowingsToDB(handle) {
 	const id = await getUserID(handle);
 	const followings = await getFollowings(id);
 	let userObj = {};
@@ -42,18 +55,35 @@ async function sendFollowingsToDB(handle) {
 	await userService.updateFollowings(id, userObj.follows);
 }
 
-async function getFollowings(userID) {
-	const followings = await client.v2.following(userID, {
-		asPaginator: true,
-		max_results: 1000,
-	});
+export async function getFollowings(userID, token) {
+	let options = {};
+	if (token.next_token) {
+		options = {
+			asPaginator: true,
+			max_results: 1000,
+			pagination_token: token.next_token,
+		};
+	} else {
+		options = {
+			asPaginator: true,
+			max_results: 1000,
+		};
+	}
 
-	console.log(followings);
+	const followings = await client.v2.following(userID, options);
+
+	//console.log(followings);
 
 	let rateLimit = followings._rateLimit;
+	let nextToken = followings._realData.meta;
 	botCache.set('rate', rateLimit);
+	botCache.set('token', nextToken);
 
 	let followingList = [];
+	for (const follows of followings._realData.data) {
+		followingList.push(follows);
+	}
+	console.log(followingList);
 	/*for await (const follows of followings) {
 		followingList.push(follows);
 	}*/
@@ -61,7 +91,7 @@ async function getFollowings(userID) {
 	//return followingList;
 }
 
-async function getFollowers(userID) {
+export async function getFollowers(userID) {
 	const followers = await client.v2.followers(userID, {
 		asPaginator: true,
 		max_results: 1000,
@@ -75,16 +105,15 @@ async function getFollowers(userID) {
 	return followerList;
 }
 
-async function getMentions(botID) {
-	let timeline = (
-		await client.v2.userMentionTimeline(botID, {
-			max_results: 100,
-		})
-	).data;
+export async function getMentions(botID) {
+	let timeline = await client.v2.userMentionTimeline(botID, {
+		max_results: 100,
+	});
 
-	let tweets = timeline.data;
+	let tweets = timeline.data.data;
+	console.log(tweets);
 
-	for (const tweet of tweets) {
+	/*for (const tweet of tweets) {
 		let tweetText = tweet.text;
 		if (!tweetText.includes('check')) {
 			continue;
@@ -93,10 +122,10 @@ async function getMentions(botID) {
 		let userArr = tweetText.match(/@\w+/g).map((x) => x.substring(1));
 		let getUser = userArr.filter((user) => user !== process.env.BOT_HANDLE).toString();
 		getUserID(getUser);
-	}
+	}*/
 }
 
-async function checkFollowers(userHandle, checkList) {
+export async function checkFollowers(userHandle, checkList) {
 	const userID = await getUserID(userHandle);
 	const userFollowings = await getFollowings(userID);
 	let positives = 0;
@@ -145,7 +174,7 @@ async function checkFollowers(userHandle, checkList) {
 	await checkTreshhold(requiredPercentage, percentage, userHandle, userID, checkList);
 }
 
-async function checkTreshhold(requiredPercentage, percentage, userHandle, userID, checkList) {
+export async function checkTreshhold(requiredPercentage, percentage, userHandle, userID, checkList) {
 	if (percentage >= requiredPercentage) {
 		return await addToList(userHandle, userID, checkList);
 	}
@@ -153,11 +182,11 @@ async function checkTreshhold(requiredPercentage, percentage, userHandle, userID
 	await threshholdNotReachedMsg(userHandle);
 }
 
-async function threshholdNotReachedMsg(userHandle) {
+export async function threshholdNotReachedMsg(userHandle) {
 	console.log(`${userHandle} folgt zu wenigen querdenkernahen/Querdenker Accounts und wird daher nicht zur Liste hinzugefügt`);
 }
 
-async function addToList(userHandle, userID, list) {
+export async function addToList(userHandle, userID, list) {
 	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle.toLowerCase()).length;
 	let checkUserID = list.filter((userObj) => userObj.userID === parseInt(userID)).length;
 
@@ -179,11 +208,9 @@ async function addToList(userHandle, userID, list) {
 	});
 }
 
-async function makeUserObject(userName, userID) {
+export async function makeUserObject(userName, userID) {
 	return {
 		userID: parseInt(userID),
 		userName: userName.toLowerCase(),
 	};
 }
-
-export { getMentions, checkFollowers, getUserID, addToList, getFollowings, sendFollowingsToDB };
