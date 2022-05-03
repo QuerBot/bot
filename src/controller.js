@@ -48,15 +48,17 @@ async function getFollowings(userID) {
 		max_results: 1000,
 	});
 
+	console.log(followings);
+
 	let rateLimit = followings._rateLimit;
 	botCache.set('rate', rateLimit);
 
 	let followingList = [];
-	for await (const follows of followings._realData.data) {
+	/*for await (const follows of followings) {
 		followingList.push(follows);
-	}
+	}*/
 
-	return followingList;
+	//return followingList;
 }
 
 async function getFollowers(userID) {

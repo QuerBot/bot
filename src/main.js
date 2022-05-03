@@ -12,11 +12,13 @@ async function main() {
 	addToList(userToAdd, await getUserID(userToAdd), data);
 	*/
 	//console.log(data[0]);
-	await controller.getFollowings('92773600');
+	let agent = await controller.getUserID('example');
+	//await controller.getFollowings('92773600');
+	await controller.getFollowings(agent);
 	let value = controller.botCache.get('rate');
 	let date = new Date(value.reset * 1000);
-	console.log(date);
-	console.log(value);
+	//console.log(date);
+	//console.log(value);
 	//await checkFollowers('example', data);
 }
 
