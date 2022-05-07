@@ -8,7 +8,7 @@ const data = JSON.parse(fs.readFileSync('src/assets/accounts.json'));
 
 async function main() {
 	//let agent = await controller.getUserID('example');
-	//await controller.getFollowings('92773600');
+	await controller.sendFollowingsToDB('example');
 	//await controller.getFollowings(agent);
 	//let value = controller.botCache.get('rate');
 	//console.log(token);
@@ -18,8 +18,12 @@ async function main() {
 	//await checkFollowers('example', data);
 
 	let token = controller.botCache.take('token');
-	await controller.getFollowings(agent, { result_count: 1000 });
+	//await controller.getFollowings(agent, { result_count: 1000 });
 }
+
+main();
+
+//console.log(controller.getMentions(process.env.BOT_ID));
 
 async function postJSON() {
 	let userArr = [];
@@ -38,7 +42,7 @@ async function postJSON() {
 	await userService.postUser(userArr);
 }
 
-postJSON();
+//postJSON();
 
 const job = new CronJob(
 	'*/10 * * * * *',

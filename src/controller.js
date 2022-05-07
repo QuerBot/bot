@@ -57,6 +57,9 @@ export async function sendFollowingsToDB(handle) {
 
 export async function getFollowings(userID, token) {
 	let options = {};
+	if (token === undefined) {
+		token = {};
+	}
 	if (token.next_token) {
 		options = {
 			asPaginator: true,
@@ -83,7 +86,7 @@ export async function getFollowings(userID, token) {
 	for (const follows of followings._realData.data) {
 		followingList.push(follows);
 	}
-	console.log(followingList);
+	return followingList;
 	/*for await (const follows of followings) {
 		followingList.push(follows);
 	}*/
