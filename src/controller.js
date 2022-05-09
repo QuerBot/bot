@@ -1,5 +1,3 @@
-import fs from "fs";
-const axios = require('axios').default;
 import client from './client';
 import * as bubbleService from './bubble/bubble.service';
 import * as userService from './user/user.service';
@@ -190,30 +188,5 @@ export async function threshholdNotReachedMsg(userHandle) {
 }
 
 export async function addToList(userHandle, userID, list) {
-	let checkUserHandle = list.filter((userObj) => userObj.userName === userHandle.toLowerCase()).length;
-	let checkUserID = list.filter((userObj) => userObj.userID === parseInt(userID)).length;
-
-	if (checkUserHandle !== 0 || checkUserID !== 0) {
-		console.log(`${userHandle} mit der ID ${userID} ist schon Teil der Liste und wurde nicht hinzugefügt`);
-		return;
-	}
-
-	let userList = list;
-	let userObj = await makeUserObject(userHandle, userID);
-	userList.push(userObj);
-	let jsonContent = JSON.stringify(userList);
-	fs.writeFile('src/assets/accounts.json', jsonContent, 'utf-8', function (e) {
-		if (e) {
-			console.log(e);
-			return;
-		}
-		console.log(`${userObj.userName} mit der ID ${userObj.userID} wurde erfolgreich zur Liste hinzugefügt`);
-	});
-}
-
-export async function makeUserObject(userName, userID) {
-	return {
-		userID: parseInt(userID),
-		userName: userName.toLowerCase(),
-	};
+	// TODO
 }
