@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import * as controller from './controller';
 import * as userService from './user/user.service';
+import * as tweetService from './tweet/tweet.service';
+import * as tweetBuilder from './tweet/tweet.builder';
 const CronJob = require('cron').CronJob;
 
 async function main() {
@@ -12,11 +14,12 @@ async function main() {
 	//await checkFollowers('example', data);
 	//let token = controller.botCache.take('token');
 	//await controller.getFollowings(agent, { result_count: 1000 });
+
+	let mentions = await tweetBuilder.getMentions(process.env.BOT_ID);
+	await tweetBuilder.builder(mentions);
 }
 
 main();
-
-//console.log(controller.getMentions(process.env.BOT_ID));
 
 //postJSON();
 

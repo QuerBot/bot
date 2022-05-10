@@ -106,26 +106,6 @@ export async function getFollowers(userID) {
 	return followerList;
 }
 
-export async function getMentions(botID) {
-	let timeline = await client.v2.userMentionTimeline(botID, {
-		max_results: 100,
-	});
-
-	let tweets = timeline.data.data;
-	console.log(tweets);
-
-	/*for (const tweet of tweets) {
-		let tweetText = tweet.text;
-		if (!tweetText.includes('check')) {
-			continue;
-		}
-
-		let userArr = tweetText.match(/@\w+/g).map((x) => x.substring(1));
-		let getUser = userArr.filter((user) => user !== process.env.BOT_HANDLE).toString();
-		getUserID(getUser);
-	}*/
-}
-
 export async function checkFollowers(userHandle, checkList) {
 	const userID = await getUserID(userHandle);
 	const userFollowings = await getFollowings(userID);
