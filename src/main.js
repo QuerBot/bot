@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import * as controller from './controller';
 import * as userService from './user/user.service';
-import * as tweetService from './tweet/tweet.service';
-import * as tweetBuilder from './tweet/tweet.builder';
 const CronJob = require('cron').CronJob;
 
 async function main() {
