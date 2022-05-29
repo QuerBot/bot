@@ -19,8 +19,6 @@ async function main() {
 
 main();
 
-//postJSON();
-
 const job = new CronJob(
 	'*/10 * * * * *',
 	function () {
