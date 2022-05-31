@@ -13,8 +13,8 @@ async function main() {
 	//let token = controller.botCache.take('token');
 	//await controller.getFollowings(agent, { result_count: 1000 });
 
-	let mentions = await tweetBuilder.getMentions(process.env.BOT_ID);
-	await tweetBuilder.builder(mentions);
+	let mentions = await controller.getMentions(process.env.BOT_ID);
+	await controller.builder(mentions);
 }
 
 main();

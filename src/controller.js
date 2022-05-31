@@ -1,6 +1,7 @@
 import client from './client';
 import * as bubbleService from './bubble/bubble.service';
 import * as userService from './user/user.service';
+import * as tweetService from './tweet/tweet.service';
 const NodeCache = require('node-cache');
 export const botCache = new NodeCache({ checkperiod: 900 });
 
@@ -169,4 +170,44 @@ export async function threshholdNotReachedMsg(userHandle) {
 
 export async function addToList(userHandle, userID, list) {
 	// TODO
+}
+
+export async function getMentions(botID) {
+	let timeline = await client.v2.userMentionTimeline(botID, {
+		max_results: 100,
+	});
+
+	let tweets = timeline.data.data;
+	return tweets;
+}
+
+async function getHandleFromTweet(tweet) {
+	let text = tweet.toLowerCase();
+	let checkWord = 'check';
+	if (!text.includes(checkWord)) {
+		return false;
+	}
+	let handle = text.slice(text.indexOf(checkWord) + checkWord.length + 1);
+	if (handle.includes('@')) {
+		handle = handle.split('@').pop();
+	}
+	return handle;
+}
+
+export async function builder(tweets) {
+	let tweetArr = [];
+	for (const tweet of tweets) {
+		let tweetObj = {};
+		tweetObj.answered = false;
+		tweetObj.tweetID = tweet.id;
+		let handle = await getHandleFromTweet(tweet.text);
+		if (!handle) {
+			continue;
+		}
+		let userID = await getUserID(handle);
+		tweetObj.requestedUser = userID;
+
+		tweetArr.push(tweetObj);
+	}
+	tweetService.queueTweet(tweetArr);
 }
