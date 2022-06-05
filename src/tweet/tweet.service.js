@@ -10,13 +10,7 @@ export async function getTweetById(id) {
 // #endregion
 
 // #region - Post Routes
-export async function queueTweet(tweet) {
-	for (const user of tweet) {
-		let userObj = {
-			id: user.requestedUser,
-		};
-		await userService.postUser(userObj);
-	}
-	await axios.post(`${process.env.BASE_URL}/tweet`, tweet);
+export async function queueTweet(tweets) {
+	await axios.post(`${process.env.BASE_URL}/tweet`, tweets);
 }
 // #endregion

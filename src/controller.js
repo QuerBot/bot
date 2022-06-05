@@ -40,20 +40,24 @@ export async function builder(tweets) {
 			continue;
 		}
 		let tweetObj = {};
-		tweetObj.answered = false;
+		tweetObj.answered = 0;
 		tweetObj.tweetID = tweet.id;
 		let handle = await getHandleFromTweet(tweet.text);
 		if (!handle) {
 			continue;
 		}
 		let userID = await getUserID(handle);
-		tweetObj.requestedUser = userID;
+		tweetObj.requestedUser = [
+			{
+				id: userID,
+			},
+		];
 
 		tweetArr.push(tweetObj);
 	}
 	if (tweetArr.length) {
 		tweetService.queueTweet(tweetArr);
-		console.log('Tick - Sent');
+		console.table(tweetArr);
 	} else {
 		console.log('Tick - not sent');
 	}
