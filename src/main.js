@@ -6,7 +6,7 @@ async function test() {
 	let mentions = await controller.getMentions(process.env.BOT_ID);
 	await controller.builder(mentions);
 }
-test();
+//test();
 
 const job = new CronJob(
 	'*/10 * * * * *',
@@ -18,4 +18,4 @@ const job = new CronJob(
 	false
 );
 
-//job.start();
+job.start();

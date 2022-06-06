@@ -1,11 +1,12 @@
 import client from './client';
 import * as tweetService from './tweet/tweet.service';
+import * as userService from './user/user.service';
 
 async function getUserID(userHandle) {
 	let user = await client.v2.userByUsername(userHandle);
 	user = user.data;
 	if (!user) {
-		return console.log(`${userHandle} ist entweder falsch, gesperrt oder existiert nicht.`);
+		return false;
 	}
 	return user.id;
 }
@@ -32,6 +33,16 @@ async function getHandleFromTweet(tweet) {
 	return handle;
 }
 
+async function addUserToDB(userId) {
+	let userObj = {};
+	let handle = await client.v2.user(userId);
+	handle = handle.data.username;
+	userObj.id = userId;
+	userObj.handle = handle;
+	userObj.rating = 0;
+	userService.postUser(userObj);
+}
+
 export async function builder(tweets) {
 	let tweetArr = [];
 	for (const tweet of tweets) {
@@ -47,12 +58,19 @@ export async function builder(tweets) {
 			continue;
 		}
 		let userID = await getUserID(handle);
+		if (!userID) {
+			continue; // If user doesn't exist
+		}
 		tweetObj.requestedUser = userID;
 		tweetArr.push(tweetObj);
+		let userExist = await userService.getUserById(userID);
+		if (userExist.length) {
+			continue;
+		}
+		await addUserToDB(userID);
 	}
 	if (tweetArr.length) {
 		tweetService.queueTweet(tweetArr);
-		console.table(tweetArr);
 	} else {
 		console.log('Tick - not sent');
 	}
