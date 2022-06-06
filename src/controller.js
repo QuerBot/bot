@@ -47,12 +47,7 @@ export async function builder(tweets) {
 			continue;
 		}
 		let userID = await getUserID(handle);
-		tweetObj.requestedUser = [
-			{
-				id: userID,
-			},
-		];
-
+		tweetObj.requestedUser = userID;
 		tweetArr.push(tweetObj);
 	}
 	if (tweetArr.length) {
