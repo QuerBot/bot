@@ -21,12 +21,18 @@ export async function getMentions(botID) {
 }
 
 async function getHandleFromTweet(tweet) {
+	if (tweet === undefined) {
+		return false;
+	}
 	let text = tweet.toLowerCase();
 	let checkWord = 'check';
 	if (!text.includes(checkWord)) {
 		return false;
 	}
 	let handle = text.split('check ')[1];
+	if (handle === undefined) {
+		return false;
+	}
 	let isValid = /^@?(\w){1,15}$/.test(handle);
 	if (!isValid) {
 		return false;
