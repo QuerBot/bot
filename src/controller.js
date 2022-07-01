@@ -26,7 +26,11 @@ async function getHandleFromTweet(tweet) {
 	if (!text.includes(checkWord)) {
 		return false;
 	}
-	let handle = text.slice(text.indexOf(checkWord) + checkWord.length + 1);
+	let handle = text.split('check ')[1];
+	let isValid = /^@?(\w){1,15}$/.test(handle);
+	if (!isValid) {
+		return false;
+	}
 	if (handle.includes('@')) {
 		handle = handle.split('@').pop();
 	}
