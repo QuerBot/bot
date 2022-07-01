@@ -8,4 +8,4 @@ We are using the npm package `twitter-api-v2`
 
 ## Credentials
 
-Add your twitter api keys to the .env.dist-file and rename it to `.env`, otherwise it won't work.
+Add your twitter api keys to the .env.dist-file and rename it to `.env`, otherwise it won't work. You will also need a BASEURL for the API.
