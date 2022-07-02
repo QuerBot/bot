@@ -54,33 +54,49 @@ async function addUserToDB(userId) {
 }
 
 export async function builder(tweets) {
+	console.log('- - - - - - - -  - - Builder Called - - - - - - - -  - -');
 	let tweetArr = [];
+	let userArr = [];
 	for (const tweet of tweets) {
-		let checkTweet = await tweetService.getTweetById(tweet.id);
-		if (checkTweet) {
-			continue;
-		}
 		let tweetObj = {};
+		let userObj = {};
 		tweetObj.answered = 0;
 		tweetObj.tweetID = tweet.id;
 		let handle = await getHandleFromTweet(tweet.text);
 		if (!handle) {
+			console.log(handle, 'handle ist fehlerhaft');
 			continue;
 		}
 		let userID = await getUserID(handle);
 		if (!userID) {
+			console.log('user existiert nicht');
 			continue; // If user doesn't exist
 		}
 		tweetObj.requestedUser = userID;
 		tweetArr.push(tweetObj);
 		let userExist = await userService.getUserById(userID);
 		if (userExist.length) {
+			console.log('user schon in der DB');
 			continue;
 		}
-		await addUserToDB(userID);
+		userObj.id = userID;
+		userObj.handle = handle;
+		userObj.rating = 0;
+		userArr.push(userObj);
+		let checkTweet = await tweetService.getTweetById(tweet.id);
+		if (checkTweet) {
+			console.log(tweet.id, 'tweet already in db!');
+			continue;
+		}
 	}
+	console.table(tweetArr);
+	console.table(userArr);
 	if (tweetArr.length) {
-		tweetService.queueTweet(tweetArr);
+		console.log('Array wird an DB gesendet:');
+		await tweetService.queueTweet(tweetArr);
+		if (userArr.length) {
+			await userService.postUser(userArr);
+		}
 	} else {
 		console.log('Tick - not sent');
 	}
